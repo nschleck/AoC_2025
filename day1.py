@@ -10,8 +10,11 @@ def move_dial(command:str):
     move_direction = command[0]
     move_distance = int(command[1:])
 
-    while move_distance > 100:
-        move_distance -=100
+    # while move_distance > 100:
+    #     move_distance -=100
+
+    if current_location == 0:
+        counter -= 1
 
     if move_direction == "L":
         current_location -= move_distance
@@ -21,25 +24,55 @@ def move_dial(command:str):
         print("Error - command not recognized")
         return
     
-    if current_location > 99:
-        current_location -= 100
-    elif current_location < 0:
-        current_location += 100
+    # print(f"command direction = {move_direction}, distance = {move_distance}")
+    # print(f"new location: {current_location}")
 
     if current_location == 0:
         counter += 1
+        # print(f"current location: 0; counter: {counter}")
+
+    while current_location > 99:
+        current_location -= 100
+        counter += 1
+        # print(f"new location: {current_location}, passed 0; counter: {counter}")
 
 
-    #print(f"direction = {move_direction}, distance = {move_distance}")
-    #print(f"new location: {current_location}")
+    while current_location < 0:
+        current_location += 100
+        counter += 1
+        # print(f"new location: {current_location}, passed 0; counter: {counter}")
+
+def move_dial_v2(command:str):
+    global current_location, counter
+    move_direction = command[0]
+    move_distance = int(command[1:])
+
+    if move_direction == "L":
+        while move_distance > 0:
+            current_location -= 1
+            move_distance -= 1
+
+            if current_location == 0:
+                counter+=1
+            elif current_location < 0:
+                current_location += 100
+
+    elif move_direction == "R":
+        while move_distance > 0:
+            current_location += 1
+            move_distance -= 1
+            
+            if current_location == 100:
+                counter+=1
+                current_location -= 100
 
 
-# move_dial("R44")
-# move_dial("R68")
-# move_dial("L20")
-# move_dial("L45")
+    else:
+        print("Error - command not recognized")
+        return
+
 
 for line in lines_list:
-    move_dial(line.strip())
+    move_dial_v2(line.strip())
 
-print(counter)
+print(f"final counter: {counter}")
