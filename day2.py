@@ -1,32 +1,45 @@
-with open("day2_ex_input.txt", 'r') as file:
+with open("day2_input.txt", 'r') as file:
     input = file.read()
 
 input_ranges = input.split(",")
 
 id_sum = 0
 
-for range in input_ranges:
-    print(f"testing range {range}...")
-    range = range.split("-")
-    lower_bound = int(range[0])
-    upper_bound = int(range[1])
+for sample_range in input_ranges:
+    print(f"[testing range {sample_range}...]")
+    sample_range = sample_range.split("-")
+    lower_bound = int(sample_range[0])
+    upper_bound = int(sample_range[1])
 
     current = lower_bound
 
     while current <= upper_bound:
         id_string = str(current)
-        current+=1
+        current += 1
 
-        if (len(id_string) % 2) != 0: #odd-number string length
-            continue
+        for substring_length in range(1, (len(id_string))):
+            valid_ID = False
+            if (len(id_string) % substring_length) != 0: # no even division
+                continue
 
-        split_char = int(len(id_string) / 2)
-        first_half = id_string[:split_char]
-        second_half = id_string[split_char:]
+            substring_list = []
 
-        if first_half == second_half:
-            id_sum += (current-1)
+            for i in range(0, len(id_string),substring_length):
+                substring_list.append(id_string[i:i+substring_length])
 
-        
+            #print(substring_list)
 
-print(id_sum)
+            test_element = substring_list[0]
+            for element in substring_list:
+                if element != test_element:
+                    #print(f"\tvalid ID substrings")
+                    valid_ID = True
+                    break
+
+            if not valid_ID:
+                id_sum += (current-1)
+                print(f"\t- invalid ID found: {current-1}")
+                break
+
+    
+print(f"Final Sum: {id_sum}")
