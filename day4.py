@@ -12,7 +12,7 @@ TOTAL_COLUMNS = len(row_list[0])
 def is_char_free(char, x, y):
     global TOTAL_ROWS, TOTAL_COLUMNS
     global row_list
-    if char == ".":
+    if char == "." or char == "x":
         return
 
     total_obstructions = 0
@@ -38,15 +38,35 @@ def is_char_free(char, x, y):
         return True
     else:
         return False
-
     
 # is_char_free("@",0,0)
 
-counter = 0
-for y, row in enumerate(row_list):
-    for x, char in enumerate(row):
-        if is_char_free(char,x,y):
-            print(f"free roll found at {x},{y}")
-            counter +=1
+def iterate_grid():
+    global row_list
+    counter = 0
+    new_row_list = []
+    for y, row in enumerate(row_list):
+        new_row = ""
+        for x, char in enumerate(row):
+            if is_char_free(char,x,y):
+                #print(f"free roll found at {x},{y}")
+                counter +=1
+                new_row+='x'
+            else:
+                new_row+=char
+        print(new_row)
+        # row_list[y] = new_row
+        new_row_list.append(new_row)
+    
+    print(f"\nremoved {counter} rolls.")
+    row_list = new_row_list
+    return counter
+        
+total_counter = 0
+i = 0
+while i<100:
+    removed_rolls = iterate_grid()
+    total_counter+=removed_rolls
+    i+=1
 
-print(counter)
+print(total_counter)
