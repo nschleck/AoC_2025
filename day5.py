@@ -1,5 +1,5 @@
 #Read in input txt as a list of rows
-with open("day5_ex_input.txt", 'r') as file:
+with open("day5_input.txt", 'r') as file:
     row_list = file.readlines()
 
 fresh_ID_ranges = []
@@ -39,36 +39,38 @@ def update_fresh_list(fresh_list:list, ID_range:str):
             print(f"new fresh ID found: {ID}")
     return fresh_list
 
-def update_fresh_ranges(fresh_ranges:list, new_range:str):
+def merge_fresh_ranges(fresh_ranges:list, new_range:str):
     new_lower = int(new_range.split("-")[0])
     new_upper = int(new_range.split("-")[1])
+    updated_fresh_list = []
 
     for eval_range in fresh_ranges:
         eval_lower = int(eval_range.split("-")[0])
         eval_upper = int(eval_range.split("-")[1])
-        if (new_lower >= eval_lower) and (new_upper <= eval_upper):
-            #already contained; do nothing
-            continue
-        elif (new_lower >= eval_lower):
-            continue
 
-        
+        if (new_lower > eval_upper) or (new_upper < eval_lower):
+            #no overlap
+            updated_fresh_list.append(eval_range)
+        else:
+            #overlap => merge ranges
+            new_lower = min(new_lower, eval_lower)
+            new_upper = max(new_upper, eval_upper)
+    
+    new_range = f"{new_lower}-{new_upper}"
+    updated_fresh_list.append(new_range)
 
-    # for ID in range(lower_bound, upper_bound+1):
-    #     if ID not in fresh_list:
-    #         fresh_list.append(ID)
-    #         print(f"new fresh ID found: {ID}")
-    return fresh_ranges
+    return updated_fresh_list
 
-
-# counter = 0
-# for ID in available_IDs:
-#     if is_ID_fresh(ID):
-#         counter += 1
-# print(f"counter = {counter}")
-
-all_fresh_list = []
+# merge overlapping ranges
 for ID_range in fresh_ID_ranges:
-    all_fresh_list = update_fresh_list(all_fresh_list, ID_range)
-    print(f"new fresh list = {all_fresh_list}")
-print(len(all_fresh_list))
+    fresh_ID_ranges = merge_fresh_ranges(fresh_ID_ranges, ID_range)
+print(f"new fresh list = {fresh_ID_ranges}")
+
+#sum up ranges
+sum = 0
+for ID_range in fresh_ID_ranges:
+    lower = int(ID_range.split("-")[0])
+    upper = int(ID_range.split("-")[1])
+    int_range = upper - lower + 1
+    sum += int_range
+print(sum)
