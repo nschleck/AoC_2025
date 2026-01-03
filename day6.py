@@ -1,35 +1,55 @@
-with open("day6_input.txt", 'r', newline=None) as file:
-    row_list = file.readlines()
+with open("day6_input.txt", 'r') as file:
+    row_list = []
+    for line in file:
+        row_list.append(line.rstrip('\n'))
 
-nested_list = []
-for row in row_list:
-    nested_list.append(row.split())
+operator_row = row_list[len(row_list)-1]
 
-operator_row = nested_list[len(nested_list)-1]
-
-# print(operator_row)
-# for row in nested_list:
-#     for item in row:
-#         print(item)
-
+# vert_numbers = []
 grand_total = 0
-
-for col in range(len(operator_row)):
-    #print(nested_list[2][col])
-    operator = operator_row[col]
-    # print(col)
-    if operator == '*':
+mult = 0
+sum = 0
+operator = ''
+for col, char in enumerate(operator_row):
+    if char == '*' or char == '+':
+        if operator == "*":
+            grand_total += mult
+            print(f"[ADDED] {mult} to grand_total. New sum: {grand_total}")
+        elif operator == "+": 
+            grand_total += sum
+            print(f"[ADDED] {sum} to grand_total. New sum: {grand_total}")
+    
+    if char == '*':
+        operator = char
         mult = 1
-        for row in range(len(nested_list) - 1):
-            mult *= int(nested_list[row][col])
-        # print(mult)
-        grand_total+= mult
-    elif operator == '+':
-        sum = 0
-        for row in range(len(nested_list) - 1):
-            sum += int(nested_list[row][col])
+    elif char == "+":
         # print(sum)
-        grand_total+= sum
+        operator = char
+        sum = 0    
+    
+    vertical_str = ''
+
+    for row in range(len(row_list)-1):
+        vertical_str += row_list[row][col]
+
+    try:
+        vertical_num = int(vertical_str)
+    except:
+        continue
+
+    if operator == "*":
+        mult *= vertical_num
+        print(f"[multiplied] by {vertical_num}. New mult: {mult}")
+
+    elif operator == "+":
+        sum += vertical_num
+        print(f"[added] {vertical_num} to sum. New sum: {sum}")
+
+if operator == "*":
+    grand_total += mult
+    print(f"[ADDED] {mult} to grand_total. New sum: {grand_total}")
+elif operator == "+": 
+    grand_total += sum
+    print(f"[ADDED] {sum} to grand_total. New sum: {grand_total}")  
     
 print(grand_total)
-# print(operator_row)
