@@ -71,7 +71,7 @@ def sortPairsByMinDist(Jbox_list:list):
 
 
 # import and create J Boxes
-with open("day8_ex_input.txt", 'r') as file:
+with open("day8_input.txt", 'r') as file:
     for line in file:
         JBox(line.rstrip('\n'))
 
@@ -79,32 +79,64 @@ with open("day8_ex_input.txt", 'r') as file:
 sorted_Jbox_pairs = sortPairsByMinDist(JBox.all_Jboxes)
 
 # Update circuits
-for i in range(10):
-    #print(f"~~~~ Loop {i} ~~~~")
+for i in range(1000):
+    print(f"~~~~ Loop {i} ~~~~")
     JBox_A = sorted_Jbox_pairs[i][1]
     JBox_B = sorted_Jbox_pairs[i][2]
-    new_circuit = True
+    flags = []
 
     # TODO handle connecting 2 existing circuits
-    for circuit in JBox.Jbox_circuits:
+
+    for j, circuit in enumerate(JBox.Jbox_circuits):
         if JBox_A in circuit:
-            circuit.append(JBox_A)
-            new_circuit = False
-            # print(circuit)
-            break
-        elif JBox_B in circuit:
-            circuit.append(JBox_B)
-            new_circuit = False 
-            # print(circuit)  
-            break 
-    if new_circuit:
+            flags.append(["A", j])
+        if JBox_B in circuit:
+            flags.append(["B", j])
+    
+    if len(flags) == 0: # new circuit
         JBox.Jbox_circuits.append([JBox_A, JBox_B])
-        # print([JBox_A, JBox_B])
+        print(f"{JBox_A} and {JBox_B} added to new circuit")
+    elif (len(flags) == 1) and (flags[0][0] == "A"): #Jbox A found
+        index = flags[0][1]
+        JBox.Jbox_circuits[index].append(JBox_B)
+        print(f"{JBox_B} added to existing circuit - new length: {len(JBox.Jbox_circuits[index])}")
+    elif (len(flags) == 1) and (flags[0][0] == "B"): #Jbox B found
+        index = flags[0][1]
+        JBox.Jbox_circuits[index].append(JBox_A)
+        print(f"{JBox_A} added to existing circuit - new length: {len(JBox.Jbox_circuits[index])}")
+    elif (len(flags)==2) and (flags[0][1] == flags[1][1]):
+        print(f"Already Connected: {JBox_A} and {JBox_B}")
+        pass
+    else: #both Jboxes found in separate circuits
+        index_1 = flags[0][1]
+        index_2 = flags[1][1]
+        #print(flags)
+        #print("here!")
+
+        new_circuits_list = []
+        for j, circuit in enumerate(JBox.Jbox_circuits):
+            if j != index_1 and j != index_2:
+                new_circuits_list.append(circuit)
+
+        new_combo_circuit = []
+        print(f"2 linked circuits found; link = {JBox_A} and {JBox_B}")
+        print("Circuit 1:")
+        for box in JBox.Jbox_circuits[index_1]:
+            print(box)
+            new_combo_circuit.append(box)
+        print("Circuit 2:")
+        for box in JBox.Jbox_circuits[index_2]:
+            print(box)
+            new_combo_circuit.append(box)
+        
+        new_circuits_list.append(new_combo_circuit)
+        print(f"Combined 2 existing circuits - new length: {len(new_combo_circuit)}")
+        JBox.Jbox_circuits = new_circuits_list
 
 
 # find longest circuits
-# sorted_circuits = sorted(JBox.Jbox_circuits, key=len, reverse=True)
-# print(len(sorted_circuits[0]))
-# print(len(sorted_circuits[1]))
-# print(len(sorted_circuits[2]))
-# print(f"final: {len(sorted_circuits[0])*len(sorted_circuits[1])*len(sorted_circuits[2])}")
+sorted_circuits = sorted(JBox.Jbox_circuits, key=len, reverse=True)
+print(len(sorted_circuits[0]))
+print(len(sorted_circuits[1]))
+print(len(sorted_circuits[2]))
+print(f"final: {len(sorted_circuits[0])*len(sorted_circuits[1])*len(sorted_circuits[2])}")
