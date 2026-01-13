@@ -91,6 +91,7 @@ def fillGreenCircles(matrix):
         new_row = ""
         inside = False
         hash_posts = 0
+        on_fencepost = False
         for j, char in enumerate(row):
             
             if char == "." and inside:
@@ -98,7 +99,9 @@ def fillGreenCircles(matrix):
             elif char == "." and not inside:
                 new_row += "."
             
-            elif char == "X":
+            elif char == "X" and on_fencepost:
+                new_row += char
+            elif char == "X" and not on_fencepost:
                 inside = not inside
                 new_row += char
 
@@ -108,22 +111,27 @@ def fillGreenCircles(matrix):
 
                 # Check incoming line direction
                 if hash_posts == 1:
+                    on_fencepost = True
+
                     if matrix[i-1][j] == ".":
                         prev_vert_dir = "UP"
-                    elif matrix[i-1][j] == "O":
+                    elif matrix[i-1][j] == "X":
                         prev_vert_dir = "DOWN"
                     else:
                         prev_vert_dir = None
 
                 if hash_posts == 2:
                     hash_posts = 0
+                    on_fencepost = False
 
-                    if (matrix[i-1][j]) == "." and (prev_vert_dir == "UP"):
-                        pass
-                    elif matrix[i-1][j] == "."and (prev_vert_dir == "UP"):
+                    if (matrix[i-1][j]) == "." and (prev_vert_dir == "DOWN"):
+                        inside = not inside
+                    elif (matrix[i-1][j]) == "X" and (prev_vert_dir == "UP"):
                         inside = not inside
                     else:
-                        prev_vert_dir = None
+                        pass
+                        #print("hash post error")
+
 
                     # TODO determine if inside or outside
 
@@ -147,8 +155,10 @@ with open("day9_ex_input.txt", 'r') as file:
     for line in file:
         RedTile(line.rstrip('\n'))
 
+print("~~~~  Initial Fenceposts:  ~~~~")
 matrix = buildGraphicMatrix()
 printGraphic(matrix)
 
+print("~~~~  Filled-In Green Tiles:  ~~~~")
 matrix = fillGreenCircles(matrix)
 printGraphic(matrix)
