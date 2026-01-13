@@ -70,16 +70,77 @@ def buildGraphicMatrix():
 
     #Add red and green tiles to graphic
     for i in range(1,len(RedTile.all_tiles)):
-        print(f"~~~~~ Loop {i} ~~~~~")
-        printGraphic(graphic)
+        # print(f"~~~~~ Loop {i} ~~~~~")
+        # printGraphic(graphic)
+
         tile = RedTile.all_tiles[i]
         prev_tile = RedTile.all_tiles[i-1]
+
         graphic = connectGraphicRedTiles(tile, prev_tile, graphic)
 
-    printGraphic(graphic)
+    # printGraphic(graphic)
     graphic = connectGraphicRedTiles(RedTile.all_tiles[0], RedTile.all_tiles[-1], graphic)
 
     return graphic
+
+def fillGreenCircles(matrix):
+    new_matrix = []
+    prev_vert_dir = None
+
+    for i, row in enumerate(matrix):
+        new_row = ""
+        inside = False
+        hash_posts = 0
+        for j, char in enumerate(row):
+            
+            if char == "." and inside:
+                new_row += "X"
+            elif char == "." and not inside:
+                new_row += "."
+            
+            elif char == "X":
+                inside = not inside
+                new_row += char
+
+            elif char == "#":
+                hash_posts += 1
+                new_row += char
+
+                # Check incoming line direction
+                if hash_posts == 1:
+                    if matrix[i-1][j] == ".":
+                        prev_vert_dir = "UP"
+                    elif matrix[i-1][j] == "O":
+                        prev_vert_dir = "DOWN"
+                    else:
+                        prev_vert_dir = None
+
+                if hash_posts == 2:
+                    hash_posts = 0
+
+                    if (matrix[i-1][j]) == "." and (prev_vert_dir == "UP"):
+                        pass
+                    elif matrix[i-1][j] == "."and (prev_vert_dir == "UP"):
+                        inside = not inside
+                    else:
+                        prev_vert_dir = None
+
+                    # TODO determine if inside or outside
+
+
+            # else:
+            #     new_row += char
+
+            # else:
+            #     new_row += char
+            #     prev_char = new_row[i-1]
+            #     #if prev_char 
+            #     inside = not inside
+
+        new_matrix.append(new_row)
+    
+    return new_matrix
+
 
 # import and create red tiles list
 with open("day9_ex_input.txt", 'r') as file:
@@ -87,4 +148,7 @@ with open("day9_ex_input.txt", 'r') as file:
         RedTile(line.rstrip('\n'))
 
 matrix = buildGraphicMatrix()
+printGraphic(matrix)
+
+matrix = fillGreenCircles(matrix)
 printGraphic(matrix)
